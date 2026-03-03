@@ -35,7 +35,8 @@ drawWorld() {
   noStroke();
 
   for (const p of this.platforms) {
-    p.update(); // Update moving platforms
+    p.update(); // Update moving/disappearing platforms
+    if (p.isDisappearing && !p.isVisible) continue;
     if (p.color) {
       fill(p.color);
     } else {
