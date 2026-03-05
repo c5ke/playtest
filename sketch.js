@@ -124,7 +124,6 @@ function draw() {
   textSize(20);
   textAlign(LEFT, TOP);
   noStroke();
-  text(level.name, 16, 14);
 
   // Energy Bar HUD
   const barW = 220;
@@ -153,12 +152,39 @@ function draw() {
   noStroke();
   rect(barX + 2, barY + 2, energyW, barH - 4, 6);
 
-  // Label
-  fill(60, 60, 70);
-  textFont("Inter");
-  textStyle(NORMAL);
-  textSize(12);
-  text("Energy", barX, barY - 18);
+  // Label: Lightning Bolt Icon (Bigger and overlapping the bar)
+  push();
+  translate(barX + barW - 15, barY + barH / 2); // Positioned to the right of the bar
+  
+  // Shadow
+  fill(0, 0, 0, 80); // Translucent black shadow
+  noStroke();
+  push();
+  translate(2, 2); // Slightly offset to the bottom-right
+  beginShape();
+  vertex(2, -15);
+  vertex(-10, 2);
+  vertex(-2, 2);
+  vertex(-10, 15);
+  vertex(8, -2);
+  vertex(0, -2);
+  vertex(8, -15);
+  endShape(CLOSE);
+  pop();
+
+  // Main Bolt
+  fill(255, 230, 0); // Bright lightning yellow
+  noStroke();
+  beginShape();
+  vertex(2, -15);
+  vertex(-10, 2);
+  vertex(-2, 2);
+  vertex(-10, 15);
+  vertex(8, -2);
+  vertex(0, -2);
+  vertex(8, -15);
+  endShape(CLOSE);
+  pop();
 
   if (boostActive) {
     // Bold, larger arrow to the right of the bar
@@ -171,17 +197,19 @@ function draw() {
     text("↑", arrowX, arrowY);
   }
 
-  // Stars Counter HUD (Top Right)
+  // Stars Counter HUD (Aligned with Energy Bar)
   textFont("Poppins");
   textStyle(BOLD);
   textSize(28);
-  textAlign(RIGHT, TOP);
+  textAlign(RIGHT, CENTER); // Center vertically with the bar
   fill(255, 215, 0);
   noStroke();
-  text("⭐", width - 45, 12);
+  
+  const starY = barY + barH / 2; // Same vertical center as the energy bar
+  text("⭐", width - 45, starY);
   
   fill(40, 40, 50);
-  text(player.starsCollected, width - 18, 16);
+  text(player.starsCollected, width - 18, starY + 2); // Slight offset for visual alignment with text baseline
   
   // Reset text settings
   textAlign(LEFT, TOP);
