@@ -83,7 +83,8 @@ function loadLevel(i) {
 function respawnPlayer() {
   player = new BlobPlayer();
   if (respawnPoint) {
-    player.spawnAt(respawnPoint.x, respawnPoint.y);
+    const dropHeight = 220;
+    player.spawnAt(respawnPoint.x, respawnPoint.y - dropHeight);
     player.starsCollected = totalStarsCollected;
     player.applyStarEnergyBonus(totalStarsCollected);
     player.energy = player.maxEnergy;

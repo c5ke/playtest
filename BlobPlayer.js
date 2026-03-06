@@ -104,7 +104,8 @@ class BlobPlayer {
     
     if (this.isSprinting) {
       currentMaxRun *= 1.5;
-      this.energy = max(0, this.energy - this.energySprintingCost);
+      // COMMENT/UNCOMMENT HERE TO ENABLE/DISABLE SPRINTING ENERGY CONSUMPTION
+      // this.energy = max(0, this.energy - this.energySprintingCost);
     }
 
     // Scale speed based on energy (at 0 energy, speed is 60% of normal)
