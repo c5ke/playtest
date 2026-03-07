@@ -245,6 +245,7 @@ function draw() {
   if (startCheckpoint) startCheckpoint.draw();
   if (checkpoint) checkpoint.draw();
   if (checkpoint2) checkpoint2.draw();
+  drawEndHouse(13770); // small house centered at end
   for (let s of stars) {
     s.draw();
   }
@@ -410,6 +411,40 @@ function draw() {
   textFont("Inter");
   textStyle(NORMAL);
   textSize(14);
+  noStroke();
+}
+
+function drawEndHouse(centerX) {
+  const groundY = 424;
+  const houseW = 50;
+  const houseH = 70;
+  const x = centerX - houseW / 2; // center house at given x
+  const baseY = groundY - houseH;
+
+  // Only draw when in view
+  if (x + houseW < cam.x - 50 || x > cam.x + width + 50) return;
+
+  noStroke();
+
+  // Body (cream/white)
+  fill(245, 240, 230);
+  rect(x, baseY, houseW, houseH);
+
+  // Roof (brown)
+  fill(120, 85, 60);
+  triangle(x - 4, baseY, x + houseW / 2, baseY - 28, x + houseW + 4, baseY);
+
+  // Door (brown)
+  fill(100, 70, 50);
+  rect(x + houseW / 2 - 8, baseY + houseH - 32, 16, 32, 2);
+
+  // Window
+  fill(200, 230, 255);
+  rect(x + 8, baseY + 18, 14, 14, 2);
+  stroke(80, 60, 45);
+  strokeWeight(1);
+  line(x + 15, baseY + 18, x + 15, baseY + 32);
+  line(x + 8, baseY + 25, x + 22, baseY + 25);
   noStroke();
 }
 
