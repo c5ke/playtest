@@ -15,7 +15,7 @@
       "start": { "x": 80, "y": 220, "r": 26 },
       "platforms": [
         
-        { "x": 0, "y": 424, "w":13000, "h": 36, "color": "green" },
+        { "x": 0, "y": 424, "w":13790, "h": 36, "color": "green" },
         { "x": 520, "y": 354, "w": 90, "h": 12, "color": "orange" },
         { "x": 650, "y": 304, "w": 90, "h": 12, "color": "dodgerblue" },
         { "x": 850, "y": 244, "w": 130, "h": 12, "color": "purple" },
@@ -156,7 +156,8 @@
           "w": 200,
           "h": 10,
           "color": "darkslategray"
-        }
+        },
+        { "x": 13000, "y": 424, "w": 800, "h": 36, "color": "green" }
       ]
     }
     

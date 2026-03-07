@@ -89,7 +89,7 @@ function loadLevel(i) {
 
   if (collectiblesData && collectiblesData.startCheckpoint) {
     const s = collectiblesData.startCheckpoint;
-    startCheckpoint = new Checkpoint(s.x, s.y, null);
+    startCheckpoint = new Checkpoint(s.x, s.y, s.text || null);
   } else {
     startCheckpoint = null;
   }
@@ -113,7 +113,7 @@ function loadLevel(i) {
   checkpointTpTargets = [];
   if (startCheckpoint) {
     checkpointTpTargets.push({
-      label: "Start",
+      label: startCheckpoint.text || "Balance",
       x: startCheckpoint.x + 2,
       y: startCheckpoint.y - 26,
     });
@@ -130,6 +130,14 @@ function loadLevel(i) {
       label: checkpoint2.text || "Checkpoint 2",
       x: checkpoint2.x + 2,
       y: checkpoint2.y - 26,
+    });
+  }
+  // TP to end of map (platform at x 13000–13800) — before Lightning so End stays on-screen
+  if (level && level.w) {
+    checkpointTpTargets.push({
+      label: "End",
+      x: 13780,
+      y: 398,
     });
   }
   if (lightningZone) {
@@ -579,7 +587,7 @@ function keyPressed() {
   if (key === " " || key === "W" || key === "w" || keyCode === UP_ARROW) {
     if (!gameStarted) {
       gameStarted = true;
-      checkpointMessage = "FOCUS";
+      checkpointMessage = "Balance";
       checkpointMessageTimer = 0;
     } else {
       player.tryJump();
@@ -592,7 +600,7 @@ function mousePressed() {
   if (!gameStarted) {
     if (isPlayButtonClicked(mouseX, mouseY)) {
       gameStarted = true;
-      checkpointMessage = "FOCUS";
+      checkpointMessage = "Balance";
       checkpointMessageTimer = 0;
     }
     return;
