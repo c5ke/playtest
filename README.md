@@ -8,7 +8,7 @@ Group 15A
 ---
 
 ## Description
-**Playtesting Acquired Brain Injury** is a 2D side‑scrolling platformer (working title: **Howard**) that explores what it feels like to move through the world while managing limited cognitive/physical energy.
+**Daisy** is a 2D side‑scrolling platformer that explores what it feels like to move through the world while managing limited cognitive/physical energy.
 
 You control a soft blob character moving through increasingly complex environments. Core mechanics are built around:
 
