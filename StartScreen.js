@@ -17,10 +17,12 @@ function drawStartScreen() {
   // Title
   fill(40, 40, 50);
   textAlign(CENTER, TOP);
-  textFont('Poppins');
+  textFont("Poppins");
   textSize(36);
   textStyle(BOLD);
-  text("Daisy", VIEW_W / 2, panelY + 32);
+  // center title horizontally inside the panel rather than whole view
+  const panelCX = panelX + panelW / 2;
+  text("Daisy", panelCX, panelY + 32);
 
   // Subtitle line
   stroke(100, 150, 255);
@@ -29,23 +31,22 @@ function drawStartScreen() {
   noStroke();
 
   // Instructions
-  textFont('Inter');
+  textFont("Inter");
   textStyle(NORMAL);
+  // align instructions left inside panel
   textAlign(LEFT, TOP);
   textSize(15);
-  const tx = panelX + 48;
+  const tx = panelX + 48; // left margin of panel
   let ty = panelY + 100;
   const lineH = 28;
 
-  fill(60, 60, 70);
-  text("Use WASD or arrow keys to move", tx, ty);
-  ty += lineH;
-  
   fill(80, 80, 90);
   textSize(14);
-  text("• Jumping costs energy", tx + 20, ty);
+  text("• Use WASD or arrow keys to move", tx, ty);
   ty += lineH + 4;
-  text("• Double jump requires at least half energy bar", tx + 20, ty);
+  text("• Jumping costs energy", tx, ty);
+  ty += lineH + 4;
+  text("• Double jump requires at least half energy bar", tx, ty);
 
   // Play button
   drawPlayButton(panelX, panelY, panelW, panelH);
@@ -57,7 +58,7 @@ function drawPlayButton(panelX, panelY, panelW, panelH) {
   const btnX = VIEW_W / 2 - btnW / 2;
   const btnY = panelY + panelH - btnH - 28;
 
-   const isHover =
+  const isHover =
     mouseX >= btnX &&
     mouseX <= btnX + btnW &&
     mouseY >= btnY &&
@@ -82,7 +83,7 @@ function drawPlayButton(panelX, panelY, panelW, panelH) {
   // Button text
   fill(255);
   textAlign(CENTER, CENTER);
-  textFont('Poppins');
+  textFont("Poppins");
   textSize(22);
   textStyle(BOLD);
   noStroke();
@@ -102,4 +103,3 @@ function isPlayButtonClicked(mx, my) {
 
   return mx >= btnX && mx <= btnX + btnW && my >= btnY && my <= btnY + btnH;
 }
-
