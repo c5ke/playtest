@@ -1,5 +1,5 @@
 class BlobPlayer {
-  constructor(jumpSound) {
+  constructor(jumpSound, walkFrames) {
     this.x = 0;
     this.y = 0;
     this.r = 26;
@@ -42,6 +42,12 @@ class BlobPlayer {
     // Status effects
     this.invertTimer = 0; // frames remaining for inverted left/right
     this.jumpSound = jumpSound;
+
+    // Sprite animation
+    this.walkFrames = walkFrames || [];
+    this.animFrame = 0;
+    this.animTimer = 0;
+    this.animSpeed = 10; // frames per sprite frame
   }
 
   spawnFromLevel(level) {
@@ -196,6 +202,20 @@ class BlobPlayer {
     this.x = constrain(this.x, this.r, level.w - this.r);
 
     this.t += this.tSpeed;
+
+    // Simple walk animation timer (only when moving on ground)
+    const movingOnGround = this.onGround && Math.abs(this.vx) > 0.1;
+    if (movingOnGround) {
+      this.animTimer++;
+      if (this.animTimer >= this.animSpeed) {
+        this.animTimer = 0;
+        this.animFrame = (this.animFrame + 1) % this.walkFrames.length;
+      }
+    } else {
+      // Reset to first frame when idle / in air so it looks clean
+      this.animTimer = 0;
+      this.animFrame = 0;
+    }
   }
 
   applyStarEnergyBonus(count) {
@@ -204,6 +224,22 @@ class BlobPlayer {
   }
 
   draw(colHex) {
+    // If sprite frames exist, use them instead of wobble blob
+    if (this.walkFrames && this.walkFrames.length > 0) {
+      const img = this.walkFrames[this.animFrame % this.walkFrames.length];
+      if (img) {
+        push();
+        imageMode(CENTER);
+        // Draw sprite sized like the blob but slightly taller and ~5px bigger overall
+        const width = this.r * 2 + 5;
+        const height = this.r * 2.4 + 5;
+        image(img, this.x, this.y, width, height);
+        pop();
+        return;
+      }
+    }
+
+    // Fallback: original blob shape
     fill(color(colHex));
     noStroke();
     beginShape();
