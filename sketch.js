@@ -28,6 +28,7 @@ let cam;
 let skyImg;
 let mountainImg;
 let groundImg;
+let jumpSound;
 let collectiblesData;
 let stars = [];
 let totalStarsCollected = 0;
@@ -52,6 +53,8 @@ function preload() {
   mountainImg = loadImage("assets/mountain.png");
   // Load ground layer to draw in front of mountains (file: assets/ground.png)
   groundImg = loadImage("assets/ground.png");
+  // Load jump sound effect
+  jumpSound = loadSound("assets/jumpsound.mp3");
 }
 
 function setup() {
@@ -66,7 +69,7 @@ function setup() {
 function loadLevel(i) {
   level = LevelLoader.fromLevelsJson(allLevelsData, i);
 
-  player = new BlobPlayer();
+  player = new BlobPlayer(jumpSound);
   player.spawnFromLevel(level);
 
   const dropHeight = 220;
@@ -163,7 +166,7 @@ function loadLevel(i) {
 }
 
 function respawnPlayer() {
-  player = new BlobPlayer();
+  player = new BlobPlayer(jumpSound);
   if (respawnPoint) {
     const dropHeight = 220;
     player.spawnAt(respawnPoint.x, respawnPoint.y - dropHeight);

@@ -1,5 +1,5 @@
 class BlobPlayer {
-  constructor() {
+  constructor(jumpSound) {
     this.x = 0;
     this.y = 0;
     this.r = 26;
@@ -41,6 +41,7 @@ class BlobPlayer {
 
     // Status effects
     this.invertTimer = 0; // frames remaining for inverted left/right
+    this.jumpSound = jumpSound;
   }
 
   spawnFromLevel(level) {
@@ -82,6 +83,9 @@ class BlobPlayer {
       this.canDoubleJump = true; // Allow double jump after first jump
       this.energy = max(0, this.energy - this.energyJumpCost);
       this.ridingPlatform = null;
+      if (this.jumpSound) {
+        this.jumpSound.play();
+      }
     } else if (!this.onGround && this.canDoubleJump && this.energy > this.maxEnergy / 2) {
       // Double jump logic: only if in air, has double jump flag, and > 50% energy
       const energyFactor = map(this.energy, 0, this.maxEnergy, 0.5, 1.0) * 0.8 * rainFactor;
@@ -89,6 +93,9 @@ class BlobPlayer {
       this.canDoubleJump = false; // consume the double jump
       this.energy = max(0, this.energy - this.energyDoubleJumpCost);
       this.ridingPlatform = null;
+      if (this.jumpSound) {
+        this.jumpSound.play();
+      }
     }
   }
 
