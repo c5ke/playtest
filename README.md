@@ -56,7 +56,12 @@ Play the game here: https://c5ke.github.io/A2_Group15_MidTermGame/
 
 **Post‑Showcase**
 
-- TBD
+- **Player Movement Lag**: Make player movement lag instead of lower jump height when energy is low
+- **Energy Bar**: Recharge when standing still
+- **Background Change**: Change the background grass to not look like a platform
+
+
+
 
 ---
 
