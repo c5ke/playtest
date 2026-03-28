@@ -28,8 +28,9 @@ class BlobPlayer {
     this.baseMaxEnergy = 200;
     this.maxEnergy = this.baseMaxEnergy;
     this.energy = this.maxEnergy;
-    this.energyRegenWalk = 0.2;
+    this.energyRegenWalk = 0.08;
     this.energyRegenStill = 0.6;
+    this.regenStillMaxVx = 0.12;
     this.energySprintingCost = 0.4;
     this.energyJumpCost = 10;
     this.energyDoubleJumpCost = 30;
@@ -38,6 +39,12 @@ class BlobPlayer {
     this.canDoubleJump = false;
     this.ridingPlatform = null;
     this.inRain = false;
+
+    // Low energy: delayed horizontal input (worse when energy is lower)
+    this.maxMoveLagFrames = 18;
+    this.moveInputBuffer = [];
+    this.jumpPressQueue = [];
+    this.jumpStutterChanceMax = 0.42;
 
     // Status effects
     this.invertTimer = 0; // frames remaining for inverted left/right
@@ -61,6 +68,8 @@ class BlobPlayer {
     this.onGround = false;
     this.canDoubleJump = false;
     this.ridingPlatform = null;
+    this.moveInputBuffer = [];
+    this.jumpPressQueue = [];
 
     this.gravity = level.gravity;
     this.jumpV = level.jumpV;
@@ -78,14 +87,28 @@ class BlobPlayer {
     this.onGround = false;
     this.canDoubleJump = false;
     this.ridingPlatform = null;
+    this.moveInputBuffer = [];
+    this.jumpPressQueue = [];
+  }
+
+  energyLagFrames() {
+    return constrain(
+      Math.round(
+        map(this.energy, 0, this.maxEnergy, this.maxMoveLagFrames, 0),
+      ),
+      0,
+      this.maxMoveLagFrames,
+    );
+  }
+
+  registerJumpPress() {
+    this.jumpPressQueue.push(this.energyLagFrames());
   }
 
   tryJump() {
     const rainFactor = this.inRain ? 0.65 : 1;
     if (this.onGround && this.energy >= 5) {
-      // Scale jump power based on energy (at 0 energy, jump is 50% power)
-      const energyFactor = map(this.energy, 0, this.maxEnergy, 0.5, 1.0) * rainFactor;
-      this.vy = this.jumpV * energyFactor;
+      this.vy = this.jumpV * rainFactor;
       this.onGround = false;
       this.canDoubleJump = true; // Allow double jump after first jump
       this.energy = max(0, this.energy - this.energyJumpCost);
@@ -95,8 +118,7 @@ class BlobPlayer {
       }
     } else if (!this.onGround && this.canDoubleJump && this.energy > this.maxEnergy / 2) {
       // Double jump logic: only if in air, has double jump flag, and > 50% energy
-      const energyFactor = map(this.energy, 0, this.maxEnergy, 0.5, 1.0) * 0.8 * rainFactor;
-      this.vy = this.jumpV * energyFactor;
+      this.vy = this.jumpV * 0.8 * rainFactor;
       this.canDoubleJump = false; // consume the double jump
       this.energy = max(0, this.energy - this.energyDoubleJumpCost);
       this.ridingPlatform = null;
@@ -109,19 +131,49 @@ class BlobPlayer {
   update(level) {
     if (this.invertTimer > 0) this.invertTimer--;
 
-    // input
-    let move = 0;
-    if (keyIsDown(65) || keyIsDown(LEFT_ARROW)) move -= 1;
-    if (keyIsDown(68) || keyIsDown(RIGHT_ARROW)) move += 1;
-    if (this.invertTimer > 0) move *= -1;
+    while (this.jumpPressQueue.length > 0 && this.jumpPressQueue[0] <= 0) {
+      this.jumpPressQueue.shift();
+      this.tryJump();
+    }
+    if (this.jumpPressQueue.length > 0) {
+      const stutterChance = map(
+        this.energy,
+        0,
+        this.maxEnergy,
+        this.jumpStutterChanceMax,
+        0,
+      );
+      if (random(1) >= stutterChance) {
+        this.jumpPressQueue[0]--;
+      }
+      if (this.jumpPressQueue[0] <= 0) {
+        this.jumpPressQueue.shift();
+        this.tryJump();
+      }
+    }
+
+    // Horizontal input (raw = keys now; move = delayed by energy-based lag)
+    let rawMove = 0;
+    if (keyIsDown(65) || keyIsDown(LEFT_ARROW)) rawMove -= 1;
+    if (keyIsDown(68) || keyIsDown(RIGHT_ARROW)) rawMove += 1;
+    if (this.invertTimer > 0) rawMove *= -1;
+
+    this.moveInputBuffer.push(rawMove);
+    while (this.moveInputBuffer.length > this.maxMoveLagFrames + 1) {
+      this.moveInputBuffer.shift();
+    }
+    const lagFrames = this.energyLagFrames();
+    const idx = this.moveInputBuffer.length - 1 - lagFrames;
+    const move = idx >= 0 ? this.moveInputBuffer[idx] : 0;
 
     // Reset double jump if we land
     if (this.onGround) {
       this.canDoubleJump = false;
     }
 
-    // Sprinting logic
-    this.isSprinting = keyIsDown(SHIFT) && move !== 0 && this.energy > 0;
+    // Sprinting logic (follows intent, not delayed move)
+    this.isSprinting =
+      keyIsDown(SHIFT) && rawMove !== 0 && this.energy > 0;
     let currentMaxRun = this.maxRun;
     
     if (this.isSprinting) {
@@ -130,17 +182,16 @@ class BlobPlayer {
       // this.energy = max(0, this.energy - this.energySprintingCost);
     }
 
-    // Scale speed based on energy (at 0 energy, speed is 60% of normal)
     const rainFactor = this.inRain ? 0.55 : 1;
-    const energySpeedFactor = map(this.energy, 0, this.maxEnergy, 0.6, 1.0);
-    const effectiveAccel = this.accel * (this.isSprinting ? 1.5 : 1.0) * energySpeedFactor * rainFactor;
-    const effectiveMaxRun = currentMaxRun * energySpeedFactor * rainFactor;
+    const effectiveAccel = this.accel * (this.isSprinting ? 1.5 : 1.0) * rainFactor;
+    const effectiveMaxRun = currentMaxRun * rainFactor;
 
-    // Energy regeneration
-    if (!this.isSprinting) {
-      if (move === 0 && this.onGround) {
+    // Energy regeneration: fast only when grounded, not sprinting, no input, and nearly stopped
+    if (!this.isSprinting && this.onGround) {
+      const movingHorizontally = Math.abs(this.vx) > this.regenStillMaxVx;
+      if (rawMove === 0 && !movingHorizontally) {
         this.energy = min(this.maxEnergy, this.energy + this.energyRegenStill);
-      } else if (this.onGround) {
+      } else {
         this.energy = min(this.maxEnergy, this.energy + this.energyRegenWalk);
       }
     }

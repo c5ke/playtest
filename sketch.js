@@ -657,7 +657,7 @@ function keyPressed() {
       checkpointMessage = "Balance";
       checkpointMessageTimer = 0;
     } else {
-      player.tryJump();
+      player.registerJumpPress();
     }
   }
   if (key === "r" || key === "R") loadLevel(levelIndex);
