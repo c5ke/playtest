@@ -80,7 +80,7 @@
           "options": { "isMoving": true, "rangeY": 60, "speed": 0.032 }
         },
         {
-          "x": 6400,
+          "x": 6300,
           "y": 320,
           "w": 110,
           "h": 12,
@@ -88,7 +88,7 @@
           "options": { "isMoving": true, "rangeX": 70, "rangeY": 40, "speed": 0.028 }
         },
         {
-          "x": 6900,
+          "x": 6600,
           "y": 260,
           "w": 95,
           "h": 12,
@@ -96,7 +96,7 @@
           "options": { "isMoving": true, "rangeX": -60, "speed": 0.03 }
         },
         {
-          "x": 7300,
+          "x": 7000,
           "y": 340,
           "w": 100,
           "h": 12,
@@ -104,7 +104,7 @@
           "options": { "isMoving": true, "rangeY": 55, "speed": 0.025 }
         },
         {
-          "x": 7800,
+          "x": 7350,
           "y": 300,
           "w": 90,
           "h": 12,
@@ -112,13 +112,21 @@
           "options": { "isMoving": true, "rangeX": 65, "speed": 0.03 }
         },
         {
-          "x": 8300,
+          "x": 7700,
           "y": 260,
           "w": 100,
           "h": 12,
           "color": "skyblue",
           "options": { "isMoving": true, "rangeY": 45, "speed": 0.03 }
         },
+        {
+          "x": 8000,
+          "y": 424,
+          "w": 300,
+          "h": 10,
+          "color": "darkslategray"
+        },
+
         { "x": 13000, "y": 424, "w": 800, "h": 36, "color": "green" }
       ]
     }
