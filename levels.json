@@ -11,7 +11,7 @@
       "gravity": 0.65,
       "jumpV": -11.0,
       "camera": { "lerp": 0.12 },
-      "world": { "w": 13800, "h": 360, "deathY": 560 },
+      "world": { "w": 14200, "h": 360, "deathY": 560 },
       "start": { "x": 80, "y": 220, "r": 26 },
       "platforms": [
         { "x": 0, "y": 424, "w": 800, "h": 36, "color": "green" },
@@ -127,7 +127,216 @@
           "color": "darkslategray"
         },
 
-        { "x": 13000, "y": 424, "w": 800, "h": 36, "color": "green" }
+        { "x": 8320, "y": 410, "w": 160, "h": 14, "color": "coral" },
+        {
+          "x": 8520,
+          "y": 368,
+          "w": 100,
+          "h": 12,
+          "color": "orchid",
+          "options": {
+            "isDisappearing": true,
+            "randomBlink": true,
+            "minVisibleFrames": 40,
+            "maxVisibleFrames": 120,
+            "minHiddenFrames": 314,
+            "maxHiddenFrames": 675,
+            "fadeFrames": 10
+          }
+        },
+        {
+          "x": 8720,
+          "y": 328,
+          "w": 95,
+          "h": 12,
+          "color": "plum",
+          "options": {
+            "isDisappearing": true,
+            "randomBlink": true,
+            "minVisibleFrames": 45,
+            "maxVisibleFrames": 130,
+            "minHiddenFrames": 318,
+            "maxHiddenFrames": 690,
+            "fadeFrames": 10
+          }
+        },
+        { "x": 8880, "y": 400, "w": 140, "h": 12, "color": "darkkhaki" },
+        {
+          "x": 9080,
+          "y": 352,
+          "w": 105,
+          "h": 12,
+          "color": "darkseagreen",
+          "options": {
+            "isDisappearing": true,
+            "randomBlink": true,
+            "minVisibleFrames": 38,
+            "maxVisibleFrames": 115,
+            "minHiddenFrames": 312,
+            "maxHiddenFrames": 670,
+            "fadeFrames": 8
+          }
+        },
+        {
+          "x": 9280,
+          "y": 312,
+          "w": 88,
+          "h": 12,
+          "color": "darkturquoise",
+          "options": {
+            "isDisappearing": true,
+            "randomBlink": true,
+            "minVisibleFrames": 42,
+            "maxVisibleFrames": 125,
+            "minHiddenFrames": 316,
+            "maxHiddenFrames": 680,
+            "fadeFrames": 10
+          }
+        },
+        { "x": 9440, "y": 418, "w": 180, "h": 12, "color": "sandybrown" },
+        {
+          "x": 9660,
+          "y": 372,
+          "w": 100,
+          "h": 12,
+          "color": "mediumpurple",
+          "options": {
+            "isDisappearing": true,
+            "randomBlink": true,
+            "minVisibleFrames": 35,
+            "maxVisibleFrames": 110,
+            "minHiddenFrames": 314,
+            "maxHiddenFrames": 672,
+            "fadeFrames": 8
+          }
+        },
+        {
+          "x": 9860,
+          "y": 292,
+          "w": 92,
+          "h": 12,
+          "color": "lightcoral",
+          "options": {
+            "isDisappearing": true,
+            "randomBlink": true,
+            "minVisibleFrames": 40,
+            "maxVisibleFrames": 118,
+            "minHiddenFrames": 315,
+            "maxHiddenFrames": 678,
+            "fadeFrames": 10
+          }
+        },
+        { "x": 10020, "y": 420, "w": 200, "h": 12, "color": "peru" },
+        {
+          "x": 10240,
+          "y": 340,
+          "w": 98,
+          "h": 12,
+          "color": "teal",
+          "options": {
+            "isDisappearing": true,
+            "randomBlink": true,
+            "minVisibleFrames": 36,
+            "maxVisibleFrames": 112,
+            "minHiddenFrames": 314,
+            "maxHiddenFrames": 676,
+            "fadeFrames": 9
+          }
+        },
+        {
+          "x": 10460,
+          "y": 300,
+          "w": 90,
+          "h": 12,
+          "color": "rosybrown",
+          "options": {
+            "isDisappearing": true,
+            "randomBlink": true,
+            "minVisibleFrames": 44,
+            "maxVisibleFrames": 128,
+            "minHiddenFrames": 316,
+            "maxHiddenFrames": 682,
+            "fadeFrames": 10
+          }
+        },
+        { "x": 10640, "y": 400, "w": 160, "h": 12, "color": "cadetblue" },
+        {
+          "x": 10840,
+          "y": 356,
+          "w": 102,
+          "h": 12,
+          "color": "mediumorchid",
+          "options": {
+            "isDisappearing": true,
+            "randomBlink": true,
+            "minVisibleFrames": 38,
+            "maxVisibleFrames": 118,
+            "minHiddenFrames": 313,
+            "maxHiddenFrames": 674,
+            "fadeFrames": 9
+          }
+        },
+        {
+          "x": 11060,
+          "y": 316,
+          "w": 94,
+          "h": 12,
+          "color": "steelblue",
+          "options": {
+            "isDisappearing": true,
+            "randomBlink": true,
+            "minVisibleFrames": 41,
+            "maxVisibleFrames": 122,
+            "minHiddenFrames": 315,
+            "maxHiddenFrames": 679,
+            "fadeFrames": 10
+          }
+        },
+        { "x": 11240, "y": 424, "w": 220, "h": 12, "color": "sienna" },
+        {
+          "x": 11520,
+          "y": 360,
+          "w": 100,
+          "h": 12,
+          "color": "darkorange",
+          "options": {
+            "isDisappearing": true,
+            "randomBlink": true,
+            "minVisibleFrames": 39,
+            "maxVisibleFrames": 116,
+            "minHiddenFrames": 314,
+            "maxHiddenFrames": 677,
+            "fadeFrames": 9
+          }
+        },
+        {
+          "x": 11740,
+          "y": 320,
+          "w": 96,
+          "h": 12,
+          "color": "olivedrab",
+          "options": {
+            "isDisappearing": true,
+            "randomBlink": true,
+            "minVisibleFrames": 43,
+            "maxVisibleFrames": 126,
+            "minHiddenFrames": 317,
+            "maxHiddenFrames": 684,
+            "fadeFrames": 10
+          }
+        },
+        { "x": 11940, "y": 400, "w": 190, "h": 14, "color": "darkslateblue" },
+        {
+          "x": 12180,
+          "y": 424,
+          "w": 280,
+          "h": 12,
+          "color": "dimgray"
+        },
+        { "x": 12520, "y": 424, "w": 260, "h": 12, "color": "darkslategray" },
+        { "x": 12800, "y": 424, "w": 420, "h": 12, "color": "gray" },
+
+        { "x": 13200, "y": 424, "w": 800, "h": 36, "color": "green" }
       ]
     }
   ]

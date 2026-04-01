@@ -18,12 +18,26 @@ class Platform {
 
     // Disappearing options
     this.isDisappearing = options.isDisappearing || false;
+    this.randomBlink = options.randomBlink || false;
+    this.minVisibleFrames = options.minVisibleFrames ?? 50;
+    this.maxVisibleFrames = options.maxVisibleFrames ?? 160;
+    this.minHiddenFrames = options.minHiddenFrames ?? 30;
+    this.maxHiddenFrames = options.maxHiddenFrames ?? 140;
     this.visibleDuration = options.visibleDuration || 120; // frames
     this.hiddenDuration = options.hiddenDuration || 120;   // frames
     this.fadeFrames = options.fadeFrames || 20;           // frames for fade in/out
     this.timer = options.timerOffset || 0;
     this.isVisible = true;
     this.alpha = 1;  // 0–1 for fading
+    this.phaseEnd = 1;
+
+    if (this.isDisappearing && this.randomBlink) {
+      this.isVisible = random() < 0.62;
+      this.phaseEnd = this.isVisible
+        ? floor(random(this.minVisibleFrames, this.maxVisibleFrames + 1))
+        : floor(random(this.minHiddenFrames, this.maxHiddenFrames + 1));
+      this.timer = floor(random(0, this.phaseEnd));
+    }
   }
 
   update() {
@@ -37,21 +51,45 @@ class Platform {
     }
 
     if (this.isDisappearing) {
-      this.timer++;
-      let cycle = this.visibleDuration + this.hiddenDuration;
-      let phase = this.timer % cycle;
-      this.isVisible = phase < this.visibleDuration;
-
-      // Fade in at start of visible, fade out at end
-      let fd = min(this.fadeFrames, this.visibleDuration / 2);
-      if (phase >= this.visibleDuration) {
-        this.alpha = 0;
-      } else if (phase < fd) {
-        this.alpha = phase / fd;
-      } else if (phase >= this.visibleDuration - fd) {
-        this.alpha = (this.visibleDuration - phase) / fd;
+      if (this.randomBlink) {
+        this.timer++;
+        if (this.timer >= this.phaseEnd) {
+          this.isVisible = !this.isVisible;
+          this.timer = 0;
+          this.phaseEnd = this.isVisible
+            ? floor(random(this.minVisibleFrames, this.maxVisibleFrames + 1))
+            : floor(random(this.minHiddenFrames, this.maxHiddenFrames + 1));
+        }
+        const visDur = this.phaseEnd;
+        if (!this.isVisible) {
+          this.alpha = 0;
+        } else {
+          const fd = min(this.fadeFrames, max(visDur * 0.5, 1));
+          if (this.timer < fd) {
+            this.alpha = this.timer / fd;
+          } else if (this.timer >= visDur - fd) {
+            this.alpha = (visDur - this.timer) / fd;
+          } else {
+            this.alpha = 1;
+          }
+        }
       } else {
-        this.alpha = 1;
+        this.timer++;
+        let cycle = this.visibleDuration + this.hiddenDuration;
+        let phase = this.timer % cycle;
+        this.isVisible = phase < this.visibleDuration;
+
+        // Fade in at start of visible, fade out at end
+        let fd = min(this.fadeFrames, this.visibleDuration / 2);
+        if (phase >= this.visibleDuration) {
+          this.alpha = 0;
+        } else if (phase < fd) {
+          this.alpha = phase / fd;
+        } else if (phase >= this.visibleDuration - fd) {
+          this.alpha = (this.visibleDuration - phase) / fd;
+        } else {
+          this.alpha = 1;
+        }
       }
     }
   }

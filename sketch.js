@@ -188,8 +188,8 @@ function loadLevel(i) {
   // TP to end of map (platform at x 13000–13800) — before Lightning so End stays on-screen
   if (level && level.w) {
     checkpointTpTargets.push({
-      label: "End",
-      x: 13780,
+      label: "poo",
+      x: 15000,
       y: 398,
     });
   }
