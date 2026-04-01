@@ -15,9 +15,51 @@ function drawSplashBackground() {
 }
 
 /**
- * Mascot on the splash mountain (right side of art), scaled to read as standing on the ridge.
- * Size is 2× the previous “one-third” caps (i.e. 2/3 of original 210 / 62% layout).
+ * Main menu mascot: liedown art (no tint/filter/animation — static liedown1, else liedown2).
+ * Falls back to startScreenBuddy if lie-down frames are missing.
  */
+function drawMainMenuLieDown() {
+  let img = null;
+  if (liedown1Img?.width) {
+    img = liedown1Img;
+  } else if (liedown2Img?.width) {
+    img = liedown2Img;
+  }
+  if (!img) {
+    drawStartScreenBuddy();
+    return;
+  }
+  const maxW = (210 / 3) * 2;
+  const maxH = ((VIEW_H * 0.62) / 3) * 2;
+  const scale = Math.min(maxW / img.width, maxH / img.height, 1) * 2;
+  const bw = img.width * scale;
+  const bh = img.height * scale;
+  const padX = 0;
+  const padY = -60;
+  const mountainLift = 108;
+  const cx = VIEW_W - padX - bw / 2;
+  const cy = VIEW_H - padY - bh / 2 - mountainLift;
+  imageMode(CENTER);
+  noTint();
+  image(img, cx, cy, bw, bh);
+
+  if (hatImg && hatImg.width) {
+    const hatTargetH = min(bh * 0.84, 260) * 1.25;
+    const hatScale = hatTargetH / hatImg.height;
+    const hatW = hatImg.width * hatScale;
+    const hatH = hatImg.height * hatScale;
+    // Clear space between blob’s right edge and hat’s left edge (px)
+    const hatGap = 300;
+    let hatCx = cx + bw / 2 + hatGap + hatW / 2;
+    const hatCy = cy - bh * 0.08;
+    hatCx = min(VIEW_W - hatW / 2, hatCx);
+    image(hatImg, hatCx, hatCy, hatW, hatH);
+  }
+
+  imageMode(CORNER);
+}
+
+/** Win screen / fallback: original standing buddy art. */
 function drawStartScreenBuddy() {
   if (!startScreenBuddyImg || !startScreenBuddyImg.width) return;
   const maxW = (210 / 3) * 2;
@@ -191,7 +233,7 @@ function drawCuteBackButton() {
 
 function drawMainMenu() {
   drawSplashBackground();
-  drawStartScreenBuddy();
+  drawMainMenuLieDown();
   drawDaisyNameLogo();
   for (const b of getMainMenuButtons()) {
     const { id, label, ...rect } = b;

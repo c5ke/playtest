@@ -60,6 +60,9 @@ let daisyImg;
 let splashScreenImg;
 let daisyNameImg;
 let startScreenBuddyImg;
+let liedown1Img;
+let liedown2Img;
+let hatImg;
 let collectiblesData;
 let stars = [];
 let totalStarsCollected = 0;
@@ -111,6 +114,9 @@ function preload() {
   splashScreenImg = loadImage("assets/images/splashscreen.png");
   daisyNameImg = loadImage("assets/images/daisyname.png");
   startScreenBuddyImg = loadImage("assets/images/startscreenbuddy.png");
+  liedown1Img = loadImage("assets/images/liedown1.png");
+  liedown2Img = loadImage("assets/images/liedown2.png");
+  hatImg = loadImage("assets/images/hat.png");
 }
 
 function setup() {
