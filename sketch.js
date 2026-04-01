@@ -51,17 +51,17 @@ let checkpointsUpdateOrder = [];
 function preload() {
   allLevelsData = loadJSON("levels.json"); // levels.json beside index.html [web:122]
   collectiblesData = loadJSON("collectibles.json");
-  // Load the tiled sky background (file lives in `assets/sky.png`)
-  skyImg = loadImage("assets/sky.png");
-  // Load mountain layer to draw on top of the sky (file: assets/mountain.png)
-  mountainImg = loadImage("assets/mountain.png");
-  // Load ground layer to draw in front of mountains (file: assets/ground.png)
-  groundImg = loadImage("assets/ground.png");
+  // Load the tiled sky background (file lives in `assets/images/sky.png`)
+  skyImg = loadImage("assets/images/sky.png");
+  // Load mountain layer to draw on top of the sky
+  mountainImg = loadImage("assets/images/mountain.png");
+  // Load ground layer to draw in front of mountains
+  groundImg = loadImage("assets/images/ground.png");
   // Load jump sound effect
-  jumpSound = loadSound("assets/jumpsound.mp3");
+  jumpSound = loadSound("assets/sounds/jumpsound.mp3");
   // Load blob walk animation frames
-  walk1Img = loadImage("assets/walk1.png");
-  walk2Img = loadImage("assets/walk2.png");
+  walk1Img = loadImage("assets/images/walk1.png");
+  walk2Img = loadImage("assets/images/walk2.png");
 }
 
 function setup() {
