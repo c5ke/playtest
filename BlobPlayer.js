@@ -292,7 +292,7 @@ class BlobPlayer {
         this.onGround &&
         (Math.abs(this.vx) > 0.1 || Math.abs(this._appliedMove) > 0);
       if (walking) {
-        this.walkSound.setVolume(1);
+        this.walkSound.setVolume(1.5);
         if (!this.walkSound.isPlaying()) {
           this.walkSound.loop();
         }
