@@ -19,6 +19,26 @@ Learning goals:
 const VIEW_W = 800;
 const VIEW_H = 480;
 
+/** Win screen ending credits — replace with your six names. */
+const WIN_SCREEN_CREDITS = [
+  "Rose Chen",
+  "Cherry Ke",
+  "Kaitlyn Subacharoen",
+  "Caitlyn Tan4",
+  "Olivia Yip",
+  "Emma Zhang",
+];
+
+/** Win screen: top→bottom scroll (thank-you + credits), then Replay (frames @ ~60fps). */
+const WIN_SCROLL_SPEED = 2.65;
+/** First line starts above the top edge; reel moves downward. */
+const WIN_CREDITS_REEL_START_Y = -400;
+const WIN_CREDITS_LINE_GAP = 28;
+const WIN_REPLAY_DELAY_FRAMES = 48;
+/** Dark overlay alpha (0–255) during credits; fades to 0 over this many frames after credits end. */
+const WIN_OVERLAY_MAX_ALPHA = 115;
+const WIN_OVERLAY_FADE_FRAMES = 55;
+
 let allLevelsData;
 let levelIndex = 0;
 
@@ -52,6 +72,10 @@ let checkpoint2 = null;
 let checkpoint3 = null;
 let startCheckpoint = null;
 let gameWon = false;
+/** Frames since win; drives thank-you → credits → replay. */
+let winScreenTimer = 0;
+/** Frame index when the last credit line scrolled off (null until then). */
+let winScreenCreditsDoneFrame = null;
 let respawnPoint = null;
 let checkpointMessage = null;
 let checkpointMessageTimer = 0;
@@ -107,6 +131,8 @@ function setup() {
 
 function loadLevel(i) {
   gameWon = false;
+  winScreenTimer = 0;
+  winScreenCreditsDoneFrame = null;
   level = LevelLoader.fromLevelsJson(allLevelsData, i);
 
   if (walkSound && walkSound.isPlaying && walkSound.isPlaying()) {
@@ -326,16 +352,19 @@ function draw() {
       }
     }
 
+    // collectibles.json: checkpoint3 is the third numbered checkpoint (after checkpoint + checkpoint2); win here
     if (checkpoint3 && checkpoint3.reached) {
       gameWon = true;
+      winScreenTimer = 0;
+      winScreenCreditsDoneFrame = null;
       checkpointMessage = null;
       if (walkSound && walkSound.isPlaying && walkSound.isPlaying()) {
         walkSound.stop();
       }
     }
 
-    // Fall death → respawn (preserve stars)
-    if (player.y - player.r > level.deathY) {
+    // Fall death → respawn (preserve stars); do not respawn on the same frame we just won
+    if (!gameWon && player.y - player.r > level.deathY) {
       respawnPlayer();
       return;
     }
@@ -568,6 +597,7 @@ function draw() {
 
   if (gameWon) {
     drawWinScreen();
+    winScreenTimer++;
   }
 
   // Reset text settings
@@ -578,25 +608,98 @@ function draw() {
   noStroke();
 }
 
+function winScreenReplayVisible() {
+  return (
+    winScreenCreditsDoneFrame !== null &&
+    winScreenTimer >= winScreenCreditsDoneFrame + WIN_REPLAY_DELAY_FRAMES
+  );
+}
+
 function drawWinScreen() {
+  const t = winScreenTimer;
+
   drawSplashBackground();
   drawStartScreenBuddy();
-  drawDaisyNameLogo();
 
-  const titleY = 212;
-  drawCuteTitle("You Win!", VIEW_W / 2, titleY);
+  const scrollOffset = t * WIN_SCROLL_SPEED;
+  const reelTop = WIN_CREDITS_REEL_START_Y + scrollOffset;
+  if (reelTop > VIEW_H + 24 && winScreenCreditsDoneFrame === null) {
+    winScreenCreditsDoneFrame = winScreenTimer;
+  }
 
-  textFont("Inter");
-  textStyle(NORMAL);
+  let overlayAlpha = WIN_OVERLAY_MAX_ALPHA;
+  if (winScreenCreditsDoneFrame !== null) {
+    const fadeT = winScreenTimer - winScreenCreditsDoneFrame;
+    overlayAlpha = map(
+      fadeT,
+      0,
+      WIN_OVERLAY_FADE_FRAMES,
+      WIN_OVERLAY_MAX_ALPHA,
+      0,
+    );
+    overlayAlpha = constrain(overlayAlpha, 0, WIN_OVERLAY_MAX_ALPHA);
+  }
+  if (overlayAlpha > 0) {
+    fill(0, 0, 0, overlayAlpha);
+    noStroke();
+    rect(0, 0, VIEW_W, VIEW_H);
+  }
+
+  // Reel (top → bottom scroll): names → “Created by:” → Daisy logo → “Thank you”
   textAlign(CENTER, TOP);
-  textSize(15);
-  textLeading(24);
-  noStroke();
-  fill(32, 28, 38);
-  text("Thanks for playing Daisy.", VIEW_W / 2, titleY + 44);
-  text("Press R or tap Replay.", VIEW_W / 2, titleY + 68);
 
-  drawCuteGlassButton(getWinScreenReplayRect(), "Replay", 22);
+  if (reelTop <= VIEW_H) {
+    let y = reelTop;
+
+    textFont("Inter");
+    textStyle(NORMAL);
+    textSize(14);
+    fill(240, 245, 250);
+    for (let i = 0; i < WIN_SCREEN_CREDITS.length; i++) {
+      text(WIN_SCREEN_CREDITS[i], VIEW_W / 2, y);
+      y += WIN_CREDITS_LINE_GAP;
+    }
+    y += 10;
+    textSize(12);
+    fill(200, 210, 225);
+    text("Created by:", VIEW_W / 2, y);
+    y += 22;
+    y += 10;
+
+    if (daisyNameImg && daisyNameImg.width) {
+      const maxLogoW = min(VIEW_W * 0.68, 360);
+      const sc = min(maxLogoW / daisyNameImg.width, 1);
+      const logoW = daisyNameImg.width * sc;
+      const logoH = daisyNameImg.height * sc;
+      imageMode(CENTER);
+      image(daisyNameImg, VIEW_W / 2, y + logoH / 2, logoW, logoH);
+      imageMode(CORNER);
+      y += logoH + 22;
+    } else {
+      textFont("Poppins");
+      textStyle(BOLD);
+      textSize(18);
+      fill(255, 220, 235);
+      text("Daisy", VIEW_W / 2, y);
+      y += 44;
+    }
+
+    textFont("Poppins");
+    textStyle(BOLD);
+    textSize(22);
+    fill(255, 252, 254);
+    text("Thank you for playing", VIEW_W / 2, y);
+  }
+
+  if (winScreenReplayVisible()) {
+    textFont("Inter");
+    textStyle(NORMAL);
+    textSize(13);
+    textAlign(CENTER, TOP);
+    fill(240, 245, 250, 230);
+    text("Press R or tap Replay", VIEW_W / 2, VIEW_H - 96);
+    drawCuteGlassButton(getWinScreenReplayRect(), "Replay", 22);
+  }
 }
 
 function drawRainZone(zone) {
@@ -778,7 +881,10 @@ function keyPressed() {
       player.registerJumpPress();
     }
   }
-  if (key === "r" || key === "R") loadLevel(levelIndex);
+  if (key === "r" || key === "R") {
+    if (gameWon && !winScreenReplayVisible()) return;
+    loadLevel(levelIndex);
+  }
   if (key === "c" || key === "C") {
     if (gameStarted) {
       showCoordsHud = !showCoordsHud;
@@ -792,7 +898,10 @@ function mousePressed() {
     return;
   }
   if (gameWon) {
-    if (pointInRect(mouseX, mouseY, getWinScreenReplayRect())) {
+    if (
+      winScreenReplayVisible() &&
+      pointInRect(mouseX, mouseY, getWinScreenReplayRect())
+    ) {
       loadLevel(levelIndex);
     }
     return;
