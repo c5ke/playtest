@@ -15,12 +15,14 @@ function drawSplashBackground() {
 }
 
 /**
- * Main menu mascot: liedown art (no tint/filter/animation — static liedown1, else liedown2).
+ * Main menu mascot: liedown1 / liedown2 loop (2× the former buddy fit size).
  * Falls back to startScreenBuddy if lie-down frames are missing.
  */
 function drawMainMenuLieDown() {
   let img = null;
-  if (liedown1Img?.width) {
+  if (liedown1Img?.width && liedown2Img?.width) {
+    img = floor(frameCount / 10) % 2 === 0 ? liedown1Img : liedown2Img;
+  } else if (liedown1Img?.width) {
     img = liedown1Img;
   } else if (liedown2Img?.width) {
     img = liedown2Img;
@@ -40,7 +42,6 @@ function drawMainMenuLieDown() {
   const cx = VIEW_W - padX - bw / 2;
   const cy = VIEW_H - padY - bh / 2 - mountainLift;
   imageMode(CENTER);
-  noTint();
   image(img, cx, cy, bw, bh);
 
   if (hatImg && hatImg.width) {
@@ -49,10 +50,11 @@ function drawMainMenuLieDown() {
     const hatW = hatImg.width * hatScale;
     const hatH = hatImg.height * hatScale;
     // Clear space between blob’s right edge and hat’s left edge (px)
-    const hatGap = 300;
+    const hatGap = 188;
     let hatCx = cx + bw / 2 + hatGap + hatW / 2;
     const hatCy = cy - bh * 0.08;
-    hatCx = min(VIEW_W - hatW / 2, hatCx);
+    // Allow center past the right edge a little so the hat isn’t stuck when the gap is large
+    hatCx = min(VIEW_W - hatW / 2 + 28, hatCx);
     image(hatImg, hatCx, hatCy, hatW, hatH);
   }
 
