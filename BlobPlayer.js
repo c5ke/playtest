@@ -101,6 +101,12 @@ class BlobPlayer {
     );
   }
 
+  /** 0 = full energy (no movement penalty), 1 = empty (max lag / jump stutter). */
+  movementStrain() {
+    if (this.maxEnergy <= 0) return 0;
+    return constrain(this.energyLagFrames() / this.maxMoveLagFrames, 0, 1);
+  }
+
   registerJumpPress() {
     this.jumpPressQueue.push(this.energyLagFrames());
   }
@@ -281,6 +287,20 @@ class BlobPlayer {
   }
 
   draw(colHex) {
+    const strain = this.movementStrain();
+    const lowEnergy = strain > 0.08;
+    let ox = 0;
+    let oy = 0;
+    let squashY = 1;
+    if (lowEnergy) {
+      const amp = strain * 3.2;
+      ox =
+        sin(frameCount * 0.38) * amp +
+        sin(frameCount * 0.13) * amp * 0.35;
+      oy = cos(frameCount * 0.31) * amp * 0.55;
+      squashY = 1 - strain * 0.07;
+    }
+
     // If sprite frames exist, use them instead of wobble blob
     if (this.walkFrames && this.walkFrames.length > 0) {
       const img = this.walkFrames[this.animFrame % this.walkFrames.length];
@@ -290,16 +310,30 @@ class BlobPlayer {
         // Draw sprite sized like the blob but slightly taller and ~1cm bigger (≈10px) overall
         const width = this.r * 2 + 15;
         const height = this.r * 2.4 + 15;
-        translate(this.x, this.y);
+        translate(this.x + ox, this.y + oy);
         scale(this.facingDir, 1); // flip horizontally when moving left
+        scale(1, squashY);
+        if (lowEnergy) {
+          tint(
+            lerp(255, 252, strain),
+            lerp(255, 178, strain),
+            lerp(255, 168, strain),
+          );
+        }
         image(img, 0, 0, width, height);
+        noTint();
         pop();
         return;
       }
     }
 
-    // Fallback: original blob shape
-    fill(color(colHex));
+    // Fallback: original blob shape (draw in local space so squash is centered)
+    push();
+    translate(this.x + ox, this.y + oy);
+    scale(1, squashY);
+    const baseCol = color(colHex);
+    const tiredCol = color(255, 200, 185);
+    fill(lowEnergy ? lerpColor(baseCol, tiredCol, strain) : baseCol);
     noStroke();
     beginShape();
     for (let i = 0; i < this.points; i++) {
@@ -310,9 +344,10 @@ class BlobPlayer {
         this.t,
       );
       const rr = this.r + map(n, 0, 1, -this.wobble, this.wobble);
-      vertex(this.x + cos(a) * rr, this.y + sin(a) * rr);
+      vertex(cos(a) * rr, sin(a) * rr);
     }
     endShape(CLOSE);
+    pop();
   }
 
   static overlap(a, b) {
