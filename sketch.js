@@ -18,6 +18,8 @@ Learning goals:
 
 const VIEW_W = 800;
 const VIEW_H = 480;
+/** First drop-in spawn: shift left from `level.start.x` (JSON stays canonical). */
+const INITIAL_SPAWN_X_OFFSET = 30;
 
 /** Win screen ending credits — replace with your six names. */
 const WIN_SCREEN_CREDITS = [
@@ -163,7 +165,7 @@ function loadLevel(i) {
 
   const dropHeight = 220;
   const groundY = 424 - player.r;
-  player.spawnAt(level.start.x, groundY - dropHeight);
+  player.spawnAt(level.start.x - INITIAL_SPAWN_X_OFFSET, groundY - dropHeight);
 
   // Initialize stars from JSON (full reset on level load)
   totalStarsCollected = 0;
