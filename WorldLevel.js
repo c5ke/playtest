@@ -28,6 +28,70 @@ class WorldLevel {
     );
   }
 
+  /**
+   * Procedural water strip (replaces grass ground.png): gradient + moving ripples.
+   * Matches prior ground layer height, Y anchor, and parallax (0.9).
+   */
+  _drawWaterLayer(desiredImgH, camX) {
+    const shorelineY = 424;
+    const canvasBottom = typeof height !== "undefined" ? height : this.h + 120;
+    const waterTop = shorelineY;
+    const waterH = max(1, canvasBottom - waterTop);
+    const groundFactor = 0.9;
+    const px = camX * (1 - groundFactor);
+    const margin = max(220, desiredImgH * 0.8);
+    const wx0 = -margin + px;
+    const ww = this.w + margin * 2;
+
+    push();
+    noStroke();
+    rectMode(CORNER);
+    const steps = 26;
+    for (let i = 0; i < steps; i++) {
+      const t = i / (steps - 1);
+      const y0 = waterTop + (waterH * i) / steps;
+      const y1 = waterTop + (waterH * (i + 1)) / steps;
+      const c = lerpColor(
+        color(175, 228, 245),
+        color(22, 92, 148),
+        pow(t, 0.82),
+      );
+      fill(c);
+      rect(wx0, y0, ww, y1 - y0 + 1);
+    }
+
+    const tAnim =
+      typeof frameCount !== "undefined" ? frameCount * 0.055 : 0;
+    for (let k = 0; k < 3; k++) {
+      const phase = k * 1.7;
+      stroke(230, 248, 255, 95 - k * 22);
+      strokeWeight(2.2 - k * 0.4);
+      noFill();
+      beginShape();
+      for (let x = wx0; x <= wx0 + ww; x += 10) {
+        const y =
+          waterTop +
+          waterH * (0.06 + k * 0.035) +
+          sin(x * 0.018 + tAnim + phase + px * 0.006) * (4 + k);
+        vertex(x, y);
+      }
+      endShape();
+    }
+
+    // Soft caustic-ish highlights (subtle)
+    noStroke();
+    for (let x = wx0; x < wx0 + ww; x += 140) {
+      const cx = x + sin(tAnim * 0.8 + x * 0.01) * 30;
+      const cy =
+        waterTop +
+        waterH * 0.45 +
+        sin(tAnim + x * 0.02) * 12;
+      fill(255, 255, 255, 18);
+      ellipse(cx, cy, 90 + sin(x) * 20, 24);
+    }
+    pop();
+  }
+
   drawWorld() {
     // If a sky image is available, tile it horizontally across the world width.
     // Drawing happens inside the camera transform (world coordinates).
@@ -66,25 +130,8 @@ class WorldLevel {
           image(mountainImg, worldX, mountainY, mTileW, mTileH);
         }
       }
-      // Draw ground layer on top of mountains (anchor to bottom of world)
-      if (typeof groundImg !== "undefined" && groundImg) {
-        const gScale = desiredImgH / groundImg.height;
-        const gTileW = groundImg.width * gScale;
-        const gTileH = groundImg.height * gScale;
-        // Anchor ground so its bottom aligns with the world bottom
-        // Move ground slightly lower so it sits a bit below the world baseline
-        const groundY = this.h - gTileH + gTileH * 0.33; // 33% downward offset
-        // Ground parallax factor: moves almost with the world
-        const groundFactor = 0.9;
-        for (
-          let baseX = -gTileW * 2;
-          baseX < this.w + gTileW * 2;
-          baseX += gTileW
-        ) {
-          const worldX = baseX + camX * (1 - groundFactor);
-          image(groundImg, worldX, groundY, gTileW, gTileH);
-        }
-      }
+      // Water layer in front of mountains (same footprint / parallax as old grass tile)
+      this._drawWaterLayer(desiredImgH, camX);
     } else {
       background(this.theme.bg);
     }

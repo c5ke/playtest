@@ -54,7 +54,6 @@ let player;
 let cam;
 let skyImg;
 let mountainImg;
-let groundImg;
 let jumpSound;
 let walkSound;
 let lobbyMusic;
@@ -111,8 +110,6 @@ function preload() {
   skyImg = loadImage("assets/images/sky.png");
   // Load mountain layer to draw on top of the sky
   mountainImg = loadImage("assets/images/mountain.png");
-  // Load ground layer to draw in front of mountains
-  groundImg = loadImage("assets/images/ground.png");
   // Load jump sound effect
   jumpSound = loadSound("assets/sounds/jumpsound.mp3");
   walkSound = loadSound("assets/sounds/walk.mp3");
